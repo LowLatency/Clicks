@@ -20,7 +20,6 @@ screen_display = screen.set_mode(size)
 screen_fill = screen.set_mode(size).fill
 screen_fill(white)
 
-
 # initialize game clock
 clock = pygame.time.Clock()
 print("Finished Initializing.")
