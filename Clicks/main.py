@@ -3,6 +3,15 @@ import pygame
 def screen_fill(color):
     screen_fill = screen.set_mode(size).fill(color)
 
+def screen_rel_pos(rel_x, rel_y):
+
+    #       Returns relative position from origin at top left corner.
+    #   Input is a percentage
+
+    x = screen_display.get_width()*rel_x/100
+    y = screen_display.get_height()*rel_y/100
+    return (x, y)
+
 
 # generic colors
 white = (255,255,255)
@@ -15,7 +24,7 @@ print("Initializing...")
 pygame.init()
 
 # set screen [width, height]
-size = [640, 480]
+size = [800, 600]
 
 # initialize game display
 screen = pygame.display
@@ -36,7 +45,8 @@ mouse_touch = False
 if pygame.font:
     font = pygame.font.Font(None, 36)
     text = font.render("Nik SUX bruh", 1, (10, 10, 10))
-    textpos = text.get_rect(centerx=screen_display.get_width()/2, centery=screen_display.get_height()/2)
+    center_X, center_Y = screen_rel_pos(50,50)
+    textpos = text.get_rect(centerx=center_X, centery=center_Y)
     screen_display.blit(text, textpos)
 
 
