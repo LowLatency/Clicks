@@ -1,5 +1,9 @@
 import pygame
 
+def screen_fill(color):
+    screen_fill = screen.set_mode(size).fill(color)
+
+
 # generic colors
 white = (255,255,255)
 black = (0,0,0)
@@ -17,7 +21,8 @@ size = [640, 480]
 screen = pygame.display
 screen_display = screen.set_mode(size)
 
-screen_fill = screen.set_mode(size).fill
+
+
 screen_fill(white)
 
 # initialize game clock
