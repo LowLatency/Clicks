@@ -6,7 +6,7 @@ def screen_fill(color):
     screen_fill = screen.set_mode(size).fill(color)
 
 
-def screen_rel_pos(rel_x, rel_y):
+def screen_rel_pos(rel_x=50, rel_y=50):
     #       Returns relative position from origin at top left corner.
     #   Input is a percentage
 
@@ -16,27 +16,63 @@ def screen_rel_pos(rel_x, rel_y):
     return (x, y)
 
 
-def pushtext(message,rel_x=50, rel_y=50, color=(10, 10, 10)):
+def pushtext(
+             message,
+             rel_x=50, rel_y=50,
+             color=(10, 10, 10),
+             font_style=None, font_size=36,
+             abs_x=0, abs_y=0,):
+
     # Text display
     if pygame.font:
-        font = pygame.font.Font(None, 36)
+        font = pygame.font.Font(font_style, font_size)
         text = font.render(message, 1, color)
-        center_X, center_Y = screen_rel_pos(rel_x,rel_y)
-        text_pos = text.get_rect(centerx=center_X, centery=center_Y)
+        center_x, center_y = screen_rel_pos(rel_x,rel_y)
+        if abs_x == 0 and abs_y == 0:
+            text_pos = text.get_rect(centerx=center_x, centery=center_y)
+        elif abs_x != 0:
+            text_pos = text.get_rect(centerx=abs_x, centery=center_y)
+        elif abs_y != 0:
+            text_pos = text.get_rect(centerx=center_x, centery=abs_y)
+        else:
+            text_pos = text.get_rect(centerx=abs_x, centery=abs_y)
         screen_display.blit(text, text_pos)
+
+def intro_message():
+    pushtext("Welcome!",rel_y=10)
+    offset = 100 # px
+    square_size = 100 # px
+
+    left_x = screen_rel_pos()[0]/2 - offset + square_size/2
+    right_x = screen_rel_pos()[0]/2 + offset + square_size/2
+
+    screen_display.fill(red, rect=[left_x, screen_rel_pos(50)[1]-square_size/2, square_size, square_size])
+    screen_display.fill(black, rect=[right_x, screen_rel_pos(50)[1]-square_size/2, square_size, square_size])
+
+    # line center
+    #screen_display.fill(blue, rect=[])
+
+    print(left_x)
+    print(right_x)
+    print(screen_rel_pos()[0])
+
+
 
 # generic colors
 white = (255,255,255)
 black = (0,0,0)
 red = (255,0,0)
+blue = (0,255,0)
+green = (0,0,255)
+
+# set screen [width, height]
+size = [640, 480]
+
 
 
 print("Initializing...")
 # initialize game engine
 pygame.init()
-
-# set screen [width, height]
-size = [800, 600]
 
 # initialize game display
 screen = pygame.display
@@ -49,16 +85,31 @@ screen_fill(white)
 # initialize game clock
 clock = pygame.time.Clock()
 
-clock.tick(30)
+#clock.tick(30)
 print("Finished Initializing.")
 
 # Temp values
 mouse_touch = False
 
+'''
+pushtext("Welcome")
+pushtext("C - clear screen", rel_y=55)
+pushtext("Space - change cursor color", rel_y=60)
+'''
+color_change = 0
 
-pushtext("Nik sux")
+pushtext("Welcome to pygame paint!",abs_y=10)
+
+cursor_color = ((0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255))
 
 gameEnd = False
+
+#screen_display.fill(cursor_color[color_change], rect=[10, 10, 50, 50])
+
+intro_message()
+
+# Event handler
+
 while gameEnd == False:
 
     # Begin event handler
@@ -69,23 +120,35 @@ while gameEnd == False:
             gameEnd = True
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+           if event.key == pygame.K_ESCAPE:
                 gameEnd = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_c:
+                screen_fill(white)
+                pygame.display.update()
+            if event.key == pygame.K_SPACE:
+                color_change += 1
+                if color_change == len(cursor_color):
+                    color_change = 0
+                # Current Color
+                screen_display.fill(cursor_color[color_change], rect=[0, 0, size[0], screen_rel_pos(5,5)[1]])
+                if cursor_color[color_change] == (0, 0, 0):
+                    pushtext("Current Color", color= (255,255,255),rel_x=50, rel_y=2, font_size=24)
+                else:
+                    pushtext("Current Color", rel_x=50, rel_y=2, font_size=24)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_touch = True
-            pushtext("Touch down!")
+
         elif event.type == pygame.MOUSEBUTTONUP:
             mouse_touch = False
-            pushtext("Lift off!")
 
         if mouse_touch:
             if event.type == pygame.MOUSEMOTION:
 
-                pushtext("Motion denied!")
-
                 mouse_location = pygame.mouse.get_pos()
-                screen_display.fill(red, rect=[mouse_location[0], mouse_location[1], 10, 10])
+                screen_display.fill(cursor_color[color_change], rect=[mouse_location[0], mouse_location[1], 10, 10])
 
     pygame.display.update()
+
 quit()
