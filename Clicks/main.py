@@ -13,7 +13,7 @@ def screen_rel_pos(rel_x=50, rel_y=50):
     x = screen_display.get_width()*rel_x/100
     y = screen_display.get_height()*rel_y/100
 
-    return (x, y)
+    return x, y
 
 
 def pushtext(
@@ -27,7 +27,7 @@ def pushtext(
     if pygame.font:
         font = pygame.font.Font(font_style, font_size)
         text = font.render(message, 1, color)
-        center_x, center_y = screen_rel_pos(rel_x,rel_y)
+        center_x, center_y = screen_rel_pos(rel_x, rel_y)
         if abs_x == 0 and abs_y == 0:
             text_pos = text.get_rect(centerx=center_x, centery=center_y)
         elif abs_x != 0:
@@ -50,68 +50,59 @@ def intro_message(offset=100, square_size=100):
 
     pygame.time.delay(250)
 
-    pushtext("Welcome!", rel_y=10, font_size=102)
-
-    left_x = screen_rel_pos()[0]/2 + offset - square_size/2 - 100
-    right_x = screen_rel_pos()[0]/2 + offset + square_size/2 + 100
-
-    height_top = screen_rel_pos(50)[1]-square_size/2
-
-    screen_display.fill(red, rect=[left_x, height_top, square_size, square_size])
-    screen_display.fill(blue, rect=[right_x, height_top, square_size, square_size])
+    pushtext("Welcome!", rel_y=12, font_size=102)
 
     # line center
     # screen_display.fill(blue, rect=[])
 
 
 def game_pick():
+    offset = 100
+    square_size = 100
 
-    result = 0
-    touch = False
+    height_top = int(screen_rel_pos(50)[1] - square_size/2)
+    height_bottom = int(screen_rel_pos(50)[1] + square_size/2)
+
+    ll_x = int(screen_rel_pos()[0] - offset - square_size)
+    lr_x = int(screen_rel_pos()[0] - offset)
+    rl_x = int(screen_rel_pos()[0] + offset)
+    rr_x = int(screen_rel_pos()[0] + offset + square_size)
+
+    screen_display.fill(red, rect=[ll_x, height_top, square_size, square_size])
+    screen_display.fill(blue, rect=[rl_x, height_top, square_size, square_size])
+
+    pygame.display.update()
+
+    result = False
+    pick = False
+
+    while pick == False:
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                pick = True
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pick = True
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
 
 
-    for event in pygame.event.get():
-
-        if event.type == pygame.QUIT:
-            gameEnd = True
-
-        if event.type == pygame.KEYDOWN:
-           if event.key == pygame.K_ESCAPE:
-                gameEnd = True
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            touch = True
-
-        elif event.type == pygame.MOUSEBUTTONUP:
-            touch = False
-
-        if touch:
-            if event.type == pygame.MOUSEMOTION:
-
-                offset = 100
-                square_size = 100
-                ll_x = screen_rel_pos()[0]/2 + offset - square_size/2 - 100
-                lr_x = screen_rel_pos()[0]/2 + offset - square_size/2
-                rl_x = screen_rel_pos()[0]/2 + offset + square_size/2
-                rr_x = screen_rel_pos()[0]/2 + offset + square_size/2 + 100
-
-                height_top = screen_rel_pos(50)[1] - square_size/2
-                height_bottom = screen_rel_pos(50)[1] + square_size/2
 
                 mouse_location = pygame.mouse.get_pos()
-                if mouse_location[1] > height_top & mouse_location[1] < height_bottom:
-                    if mouse_location[0] > ll_x & mouse_location[0] < lr_x:
+                if height_top <= mouse_location[1] <= height_bottom:
+
+                    if ll_x <= mouse_location[0] <= lr_x:
+
                         result = 1
-                        break
+                        pick = True
 
-                    elif mouse_location[0] > rl_x & mouse_location[0] < rr_x:
+                    elif rl_x <= mouse_location[0] <= rr_x:
+
                         result = 2
-                        break
-
+                        pick = True
     return result
-
-
-
 
 # generic colors
 white = (255, 255, 255)
@@ -147,11 +138,7 @@ print("Finished Initializing.")
 # Temp values
 mouse_touch = False
 
-'''
-pushtext("Welcome")
-pushtext("C - clear screen", rel_y=55)
-pushtext("Space - change cursor color", rel_y=60)
-'''
+
 color_change = 0
 
 
@@ -162,46 +149,28 @@ gameEnd = False
 #screen_display.fill(cursor_color[color_change], rect=[10, 10, 50, 50])
 
 intro_message()
-
+'''
 pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
+'''
 
 # Event handler
 
+output = game_pick()
+if output == 0:
+    quit()
+elif output == 1:
+    intro_message()
+elif output == 2:
+    pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
+    pygame.time.delay(500)
+
+    intro_message()
+
+    pushtext("C - clear screen", rel_y=55, color=white)
+    pushtext("Space - change cursor color", rel_y=60, color=white)
+
+
 while gameEnd == False:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     # Begin event handler
     for event in pygame.event.get():
@@ -211,7 +180,7 @@ while gameEnd == False:
             gameEnd = True
 
         if event.type == pygame.KEYDOWN:
-           if event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_ESCAPE:
                 gameEnd = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_c:
@@ -241,5 +210,6 @@ while gameEnd == False:
                 screen_display.fill(cursor_color[color_change], rect=[mouse_location[0], mouse_location[1], 10, 10])
 
     pygame.display.update()
+
 
 quit()
