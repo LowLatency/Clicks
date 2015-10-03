@@ -37,20 +37,24 @@ def pushtext(
         else:
             text_pos = text.get_rect(centerx=abs_x, centery=abs_y)
         screen_display.blit(text, text_pos)
+    pygame.display.update()
 
 
-def intro_message(offset=100, square_size=100):
+
+def intro_message(animation=True, message="Welcome", color=(0, 0, 0)):
 
     for i in range(128):
         screen_display.fill((0, 0, 0))
         image = pygame.image.load("turtle.jpg")
-        image.set_alpha(i/128*255)
+        if animation:
+            image.set_alpha(i/128*255)
         logoimage = screen_display.blit(image, (0, 0))
         pygame.display.flip()
 
-    pygame.time.delay(250)
+    # pygame.time.delay(250)
 
-    pushtext("Welcome!", rel_y=12, font_size=102)
+    if message:
+        pushtext(message=message, rel_y=12, font_size=102, color=color)
 
     # line center
     # screen_display.fill(blue, rect=[])
@@ -146,70 +150,83 @@ cursor_color = ((0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255
 
 gameEnd = False
 
-#screen_display.fill(cursor_color[color_change], rect=[10, 10, 50, 50])
+# screen_display.fill(cursor_color[color_change], rect=[10, 10, 50, 50])
 
-intro_message()
-'''
-pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
-'''
 
-# Event handler
+# Game begin
 
-output = game_pick()
-if output == 0:
-    quit()
-elif output == 1:
+while not gameEnd:
+
     intro_message()
-elif output == 2:
+    '''
     pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
-    pygame.time.delay(500)
+    '''
 
-    intro_message()
+    # Event handler
 
-    pushtext("C - clear screen", rel_y=55, color=white)
-    pushtext("Space - change cursor color", rel_y=60, color=white)
+    output = game_pick()
+    if output == 0:
+        quit()
+    elif output == 1:
+        intro_message(False, message="Red Option!", color=red)
+        pushtext("Red has been selected!", abs_y=100, color=red)
+        # pygame.time.delay(250)
+        pushtext("ESC - main menu", rel_y=90, color=green)
+    elif output == 2:
+        intro_message(False, message="Blue Option", color=blue)
+
+        pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
+        # pygame.time.delay(500)
+
+        pushtext("C - clear screen", rel_y=55, color=white)
+        pushtext("Space - change cursor color", rel_y=60, color=white)
+        pushtext("ESC - main menu", rel_y=90, color=green)
 
 
-while gameEnd == False:
+    handle = True
 
     # Begin event handler
-    for event in pygame.event.get():
-        screen.set_caption(str(event))
-        print(event)
-        if event.type == pygame.QUIT:
-            gameEnd = True
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+    while handle:
+        for event in pygame.event.get():
+            screen.set_caption(str(event))
+            print(event)
+            if event.type == pygame.QUIT:
+                handle = False
                 gameEnd = True
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_c:
-                screen_fill(white)
-                pygame.display.update()
-            if event.key == pygame.K_SPACE:
-                color_change += 1
-                if color_change == len(cursor_color):
-                    color_change = 0
-                # Current Color
-                screen_display.fill(cursor_color[color_change], rect=[0, 0, size[0], screen_rel_pos(5,5)[1]])
-                if cursor_color[color_change] == (0, 0, 0):
-                    pushtext("Current Color", color=(255, 255, 255), rel_x=50, rel_y=2, font_size=24)
-                else:
-                    pushtext("Current Color", rel_x=50, rel_y=2, font_size=24)
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_touch = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    handle = False
+                    gameEnd = False
 
-        elif event.type == pygame.MOUSEBUTTONUP:
-            mouse_touch = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_c:
+                    screen_fill(white)
+                    pygame.display.update()
+                if event.key == pygame.K_SPACE:
+                    color_change += 1
+                    if color_change == len(cursor_color):
+                        color_change = 0
+                    # Current Color
+                    screen_display.fill(cursor_color[color_change], rect=[0, 0, size[0], screen_rel_pos(5,5)[1]])
+                    if cursor_color[color_change] == (0, 0, 0):
+                        pushtext("Current Color", color=(255, 255, 255), rel_x=50, rel_y=2, font_size=24)
+                    else:
+                        pushtext("Current Color", rel_x=50, rel_y=2, font_size=24)
 
-        if mouse_touch:
-            if event.type == pygame.MOUSEMOTION:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_touch = True
 
-                mouse_location = pygame.mouse.get_pos()
-                screen_display.fill(cursor_color[color_change], rect=[mouse_location[0], mouse_location[1], 10, 10])
+            elif event.type == pygame.MOUSEBUTTONUP:
+                mouse_touch = False
 
-    pygame.display.update()
+            if mouse_touch:
+                if event.type == pygame.MOUSEMOTION:
+
+                    mouse_location = pygame.mouse.get_pos()
+                    screen_display.fill(cursor_color[color_change], rect=[mouse_location[0], mouse_location[1], 10, 10])
+
+        pygame.display.update()
 
 
 quit()
