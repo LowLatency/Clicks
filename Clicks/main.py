@@ -38,32 +38,39 @@ def pushtext(
             text_pos = text.get_rect(centerx=abs_x, centery=abs_y)
         screen_display.blit(text, text_pos)
 
+
 def intro_message():
-    pushtext("Welcome!",rel_y=10)
+
+
+    for i in range(255):
+        screen_display.fill((0, 0, 0))
+        image = pygame.image.load("turtle.jpg")
+        image.set_alpha(i)
+        logoimage = screen_display.blit(image, (0, 0))
+        pygame.display.flip()
+
+
+    pygame.time.delay(2000)
+    pushtext("Welcome!", rel_y=10, font_size=102)
     offset = 100 # px
     square_size = 100 # px
 
-    left_x = screen_rel_pos()[0]/2 - offset + square_size/2
-    right_x = screen_rel_pos()[0]/2 + offset + square_size/2
+    left_x = screen_rel_pos()[0]/2 + offset - square_size/2 - 100
+    right_x = screen_rel_pos()[0]/2 + offset + square_size/2 + 100
 
     screen_display.fill(red, rect=[left_x, screen_rel_pos(50)[1]-square_size/2, square_size, square_size])
-    screen_display.fill(black, rect=[right_x, screen_rel_pos(50)[1]-square_size/2, square_size, square_size])
+    screen_display.fill(blue, rect=[right_x, screen_rel_pos(50)[1]-square_size/2, square_size, square_size])
 
     # line center
     #screen_display.fill(blue, rect=[])
 
-    print(left_x)
-    print(right_x)
-    print(screen_rel_pos()[0])
-
-
 
 # generic colors
-white = (255,255,255)
-black = (0,0,0)
-red = (255,0,0)
-blue = (0,255,0)
-green = (0,0,255)
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (255, 0, 0)
+blue = (0, 0, 255)
+green = (0, 255, 0)
 
 # set screen [width, height]
 size = [640, 480]
@@ -133,7 +140,7 @@ while gameEnd == False:
                 # Current Color
                 screen_display.fill(cursor_color[color_change], rect=[0, 0, size[0], screen_rel_pos(5,5)[1]])
                 if cursor_color[color_change] == (0, 0, 0):
-                    pushtext("Current Color", color= (255,255,255),rel_x=50, rel_y=2, font_size=24)
+                    pushtext("Current Color", color=(255, 255, 255), rel_x=50, rel_y=2, font_size=24)
                 else:
                     pushtext("Current Color", rel_x=50, rel_y=2, font_size=24)
 
