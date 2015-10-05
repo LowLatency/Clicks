@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import pygame
+import random
 # import generic_colors
 
 
@@ -197,7 +198,6 @@ while not gameEnd:
 
         pushtext("Penguin Click Counter", abs_y=100, color=orange)
 
-
         clicks = True
 
         score = 0
@@ -218,9 +218,18 @@ while not gameEnd:
                             score += 1
 
                             print(score)
-                            screen_display.fill(white, rect=[0, 0, 50, 50])
+                            screen_display.fill(white, rect=[0, 0, 50, 35])
                             pygame.display.flip()
                             pushtext(str(score), abs_x=20, abs_y=20)
+
+                            if score == 10:
+                                for color in cursor_color:
+                                    pushtext("Release the Alligators!", rel_y=10, color=color)
+                                    pygame.time.delay(50)
+                                pushtext("Release the Alligators!", rel_y=10, color=red)
+
+                            if score >= 10:
+                                insert_image("Alligator.png", (random.randrange(0, size[0]), random.randrange(0, size[1])))
 
         handle = False
 
