@@ -219,6 +219,7 @@ while not gameEnd:
 
                             print(score)
                             screen_display.fill(white, rect=[0, 0, 50, 35])
+                            pushtext("ESC - main menu", rel_y=90, color=cursor_color[score % 5])
                             pygame.display.flip()
                             pushtext(str(score), abs_x=20, abs_y=20)
 
