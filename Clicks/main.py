@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import pygame
+# import generic_colors
 
 
 def screen_fill(color):
-    screen_fill = screen.set_mode(size).fill(color)
+    screen.set_mode(size).fill(color)
 
 
 def screen_rel_pos(rel_x=50, rel_y=50):
@@ -21,7 +22,7 @@ def pushtext(
              rel_x=50, rel_y=50,
              color=(10, 10, 10),
              font_style=None, font_size=36,
-             abs_x=0, abs_y=0,):
+             abs_x=0, abs_y=0):
 
     # Text display
     if pygame.font:
@@ -30,15 +31,18 @@ def pushtext(
         center_x, center_y = screen_rel_pos(rel_x, rel_y)
         if abs_x == 0 and abs_y == 0:
             text_pos = text.get_rect(centerx=center_x, centery=center_y)
+        elif abs_x != 0 and abs_y != 0:
+            text_pos = text.get_rect(centerx=abs_x, centery=abs_y)
         elif abs_x != 0:
             text_pos = text.get_rect(centerx=abs_x, centery=center_y)
         elif abs_y != 0:
             text_pos = text.get_rect(centerx=center_x, centery=abs_y)
+        '''
         else:
             text_pos = text.get_rect(centerx=abs_x, centery=abs_y)
+        '''
         screen_display.blit(text, text_pos)
     pygame.display.update()
-
 
 
 def intro_message(animation=True, message="Welcome", color=(0, 0, 0)):
@@ -58,6 +62,12 @@ def intro_message(animation=True, message="Welcome", color=(0, 0, 0)):
 
     # line center
     # screen_display.fill(blue, rect=[])
+
+
+def insert_image(file, location=(0, 0)):
+    image = pygame.image.load(file)
+    screen_display.blit(image, location)
+    pygame.display.flip()
 
 
 def game_pick():
@@ -80,7 +90,7 @@ def game_pick():
     result = False
     pick = False
 
-    while pick == False:
+    while not pick:
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -91,8 +101,6 @@ def game_pick():
                     pick = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-
-
 
                 mouse_location = pygame.mouse.get_pos()
                 if height_top <= mouse_location[1] <= height_bottom:
@@ -158,6 +166,7 @@ gameEnd = False
 while not gameEnd:
 
     intro_message()
+    handle = True
     '''
     pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
     '''
@@ -168,10 +177,53 @@ while not gameEnd:
     if output == 0:
         quit()
     elif output == 1:
-        intro_message(False, message="Red Option!", color=red)
-        pushtext("Red has been selected!", abs_y=100, color=red)
-        # pygame.time.delay(250)
-        pushtext("ESC - main menu", rel_y=90, color=green)
+        screen_fill(white)
+        pushtext("Red Option!", rel_y=10, color=red)
+        # intro_message(False, message="Red Option!", color=red)
+        for i in range(2):
+            for color in cursor_color:
+                pushtext("Red has been selected!", abs_y=100, color=color)
+                pygame.time.delay(50)
+        # pushtext("ESC - main menu", rel_y=90, color=green)
+
+        screen_fill(white)
+
+        image_size_x = 300
+        image_size_y = 300
+
+        image_location = (screen_rel_pos()[0] - image_size_x/2, screen_rel_pos()[1] - image_size_y/2)
+
+        insert_image("penguin.jpg", image_location)
+
+        pushtext("Penguin Click Counter", abs_y=100, color=orange)
+
+
+        clicks = True
+
+        score = 0
+
+        while clicks:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        clicks = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+
+                    mouse_location = pygame.mouse.get_pos()
+                    if image_location[1] <= mouse_location[1] <= image_location[1] + image_size_y:
+                        if image_location[0] <= mouse_location[0] <= image_location[0] + image_size_x:
+                            score += 1
+
+                            print(score)
+                            screen_display.fill(white, rect=[0, 0, 50, 50])
+                            pygame.display.flip()
+                            pushtext(str(score), abs_x=20, abs_y=20)
+
+        handle = False
+
     elif output == 2:
         intro_message(False, message="Blue Option", color=blue)
 
@@ -181,9 +233,6 @@ while not gameEnd:
         pushtext("C - clear screen", rel_y=55, color=white)
         pushtext("Space - change cursor color", rel_y=60, color=white)
         pushtext("ESC - main menu", rel_y=90, color=green)
-
-
-    handle = True
 
     # Begin event handler
     while handle:
