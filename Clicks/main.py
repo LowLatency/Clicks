@@ -1,11 +1,10 @@
 #!/usr/bin/python
 import pygame
 import random
-# import generic_colors
 
 
-def screen_fill(color):
-    screen.set_mode(size).fill(color)
+def screen_fill(input_color):
+    screen.set_mode(size).fill(input_color)
 
 
 def screen_rel_pos(rel_x=50, rel_y=50):
@@ -30,6 +29,7 @@ def pushtext(
         font = pygame.font.Font(font_style, font_size)
         text = font.render(message, 1, color)
         center_x, center_y = screen_rel_pos(rel_x, rel_y)
+
         if abs_x == 0 and abs_y == 0:
             text_pos = text.get_rect(centerx=center_x, centery=center_y)
         elif abs_x != 0 and abs_y != 0:
@@ -38,10 +38,7 @@ def pushtext(
             text_pos = text.get_rect(centerx=abs_x, centery=center_y)
         elif abs_y != 0:
             text_pos = text.get_rect(centerx=center_x, centery=abs_y)
-        '''
-        else:
-            text_pos = text.get_rect(centerx=abs_x, centery=abs_y)
-        '''
+
         screen_display.blit(text, text_pos)
     pygame.display.update()
 
@@ -60,9 +57,6 @@ def intro_message(animation=True, message="Welcome", color=(0, 0, 0)):
 
     if message:
         pushtext(message=message, rel_y=12, font_size=102, color=color)
-
-    # line center
-    # screen_display.fill(blue, rect=[])
 
 
 def insert_image(file, location=(0, 0)):
@@ -129,7 +123,6 @@ orange = (255, 140, 0)
 size = [640, 480]
 
 
-
 print("Initializing...")
 # initialize game engine
 pygame.init()
@@ -137,7 +130,6 @@ pygame.init()
 # initialize game display
 screen = pygame.display
 screen_display = screen.set_mode(size)
-
 
 
 screen_fill(white)
@@ -150,16 +142,10 @@ print("Finished Initializing.")
 
 # Temp values
 mouse_touch = False
-
-
+gameEnd = False
 color_change = 0
 
-
 cursor_color = ((0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255))
-
-gameEnd = False
-
-# screen_display.fill(cursor_color[color_change], rect=[10, 10, 50, 50])
 
 
 # Game begin
@@ -168,9 +154,6 @@ while not gameEnd:
 
     intro_message()
     handle = True
-    '''
-    pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
-    '''
 
     # Event handler
 
@@ -180,12 +163,10 @@ while not gameEnd:
     elif output == 1:
         screen_fill(white)
         pushtext("Red Option!", rel_y=10, color=red)
-        # intro_message(False, message="Red Option!", color=red)
         for i in range(2):
             for color in cursor_color:
                 pushtext("Red has been selected!", abs_y=100, color=color)
                 pygame.time.delay(50)
-        # pushtext("ESC - main menu", rel_y=90, color=green)
 
         screen_fill(white)
 
@@ -238,7 +219,6 @@ while not gameEnd:
         intro_message(False, message="Blue Option", color=blue)
 
         pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
-        # pygame.time.delay(500)
 
         pushtext("C - clear screen", rel_y=55, color=white)
         pushtext("Space - change cursor color", rel_y=60, color=white)
@@ -284,8 +264,6 @@ while not gameEnd:
 
                     mouse_location = pygame.mouse.get_pos()
                     screen_display.fill(cursor_color[color_change], rect=[mouse_location[0], mouse_location[1], 10, 10])
-
         pygame.display.update()
-
 
 quit()
