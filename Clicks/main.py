@@ -1,6 +1,12 @@
 #!/usr/bin/python
-import pygame
 import random
+
+# pygame module is mandatory, game can not run without it
+try:
+    import pygame
+except ImportError:
+    print("pygame is required!")
+    quit()
 
 
 def screen_fill(input_color):
@@ -9,12 +15,18 @@ def screen_fill(input_color):
 
 def screen_rel_pos(rel_x=50, rel_y=50):
     #       Returns relative position from origin at top left corner.
-    #   Input is a percentage
+    #   - Input is a percentage
 
     x = screen_display.get_width()*rel_x/100
     y = screen_display.get_height()*rel_y/100
 
     return x, y
+
+
+def insert_image(file, location=(0, 0)):
+    image = pygame.image.load(file)
+    screen_display.blit(image, location)
+    pygame.display.flip()
 
 
 def pushtext(
@@ -23,6 +35,11 @@ def pushtext(
              color=(10, 10, 10),
              font_style=None, font_size=36,
              abs_x=0, abs_y=0):
+    #       Prints text to display
+    #   - Position can be customized relative or absolute to the screen dimensions.
+    #   - Will always be using relative position unless an absolute position is specified.
+    #   - If given a absolute position value in a single axis, then the perspective perpendicular axis will be
+    #   using the relative value.
 
     # Text display
     if pygame.font:
@@ -44,31 +61,25 @@ def pushtext(
 
 
 def intro_message(animation=True, message="Welcome", color=(0, 0, 0)):
+    #       Splash screen with simple message prompt
 
+    # Splash screen image display
     for i in range(128):
         screen_display.fill((0, 0, 0))
         image = pygame.image.load("turtle.jpg")
         if animation:
             image.set_alpha(i/128*255)
-        logoimage = screen_display.blit(image, (0, 0))
+        screen_display.blit(image, (0, 0))
         pygame.display.flip()
-
-    # pygame.time.delay(250)
 
     if message:
         pushtext(message=message, rel_y=12, font_size=102, color=color)
 
 
-def insert_image(file, location=(0, 0)):
-    image = pygame.image.load(file)
-    screen_display.blit(image, location)
-    pygame.display.flip()
-
-
 def game_pick():
     #       Display two rectangular buttons for user to decide which path to take
-    #   From center of screen, offset is how many pixels from relative center of display.
-    #   square size allows you to customize how big or small the square shall be.
+    #   - From center of screen, offset is how many pixels from relative center of display.
+    #   - Square size allows you to customize how big or small the square shall be.
     
     #   Output:
     #   left button, result = 1
@@ -88,6 +99,7 @@ def game_pick():
     rl_x = int(screen_rel_pos()[0] + offset)
     rr_x = int(screen_rel_pos()[0] + offset + square_size)
 
+    # create buttons
     screen_display.fill(red, rect=[ll_x, height_top, square_size, square_size])
     screen_display.fill(blue, rect=[rl_x, height_top, square_size, square_size])
 
@@ -112,6 +124,7 @@ def game_pick():
                 mouse_location = pygame.mouse.get_pos()
                 if height_top <= mouse_location[1] <= height_bottom:
 
+                    # check press button
                     if ll_x <= mouse_location[0] <= lr_x:
 
                         result = 1
@@ -123,6 +136,8 @@ def game_pick():
                         pick = True
     return result
 
+# Parameters
+
 # generic colors
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -130,6 +145,7 @@ red = (255, 0, 0)
 blue = (0, 0, 255)
 green = (0, 255, 0)
 orange = (255, 140, 0)
+cursor_color = (black, red, green, blue, white, orange)
 
 # set screen [width, height]
 size = [640, 480]
@@ -149,15 +165,13 @@ screen_fill(white)
 # initialize game clock
 clock = pygame.time.Clock()
 
-#clock.tick(30)
 print("Finished Initializing.")
 
 # Temp values
 mouse_touch = False
 gameEnd = False
 color_change = 0
-
-cursor_color = ((0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255))
+alligatorArt = "Alligator.png"
 
 
 # Game begin
@@ -167,12 +181,16 @@ while not gameEnd:
     intro_message()
     handle = True
 
-    # Event handler
-
+    # Select option
     output = game_pick()
+
     if output == 0:
+        # Exit
         quit()
+
     elif output == 1:
+        # Penguin tickle option
+
         screen_fill(white)
         pushtext("Red Option!", rel_y=10, color=red)
         for i in range(2):
@@ -195,7 +213,7 @@ while not gameEnd:
 
         score = 0
 
-        # Clicks game
+        # Begin event handler for penguin clicks
         while clicks:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -206,6 +224,7 @@ while not gameEnd:
                         clicks = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
 
+                    # Detect if mouse clicks are within image dimensions
                     mouse_location = pygame.mouse.get_pos()
                     if image_location[1] <= mouse_location[1] <= image_location[1] + image_size_y:
                         if image_location[0] <= mouse_location[0] <= image_location[0] + image_size_x:
@@ -224,11 +243,12 @@ while not gameEnd:
                                 pushtext("Release the Alligators!", rel_y=10, color=red)
 
                             if score >= 10:
-                                insert_image("Alligator.png", (random.randrange(0, size[0]), random.randrange(0, size[1])))
+                                insert_image(alligatorArt, (random.randrange(0, size[0]), random.randrange(0, size[1])))
 
         handle = False
 
     elif output == 2:
+        # Freestyle painting
         intro_message(False, message="Blue Option", color=blue)
 
         pushtext("Welcome to pygame paint!", abs_y=100, color=orange)
@@ -237,7 +257,7 @@ while not gameEnd:
         pushtext("Space - change cursor color", rel_y=60, color=white)
         pushtext("ESC - main menu", rel_y=90, color=green)
 
-    # Begin event handler
+    # Begin event handler for paint
     while handle:
         for event in pygame.event.get():
             screen.set_caption(str(event))
@@ -259,13 +279,15 @@ while not gameEnd:
                     color_change += 1
                     if color_change == len(cursor_color):
                         color_change = 0
-                    # Current Color
                     screen_display.fill(cursor_color[color_change], rect=[0, 0, size[0], screen_rel_pos(5,5)[1]])
-                    if cursor_color[color_change] == (0, 0, 0):
-                        pushtext("Current Color", color=(255, 255, 255), rel_x=50, rel_y=2, font_size=24)
+                    if cursor_color[color_change] == black:
+                        pushtext("Current Color", color=white, rel_x=50, rel_y=2, font_size=24)
                     else:
                         pushtext("Current Color", rel_x=50, rel_y=2, font_size=24)
 
+            #       Monitors mouse clicks and movement for painting
+            #   - If mouse is stationary, no paint will be recorded on canvas.
+            #   - Left click and mouse drag is required for painting on canvas.
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_touch = True
 
