@@ -66,14 +66,25 @@ def insert_image(file, location=(0, 0)):
 
 
 def game_pick():
+    #       Display two rectangular buttons for user to decide which path to take
+    #   From center of screen, offset is how many pixels from relative center of display.
+    #   square size allows you to customize how big or small the square shall be.
+    
+    #   Output:
+    #   left button, result = 1
+    #   right button, result = 2
+    
     offset = 100
     square_size = 100
 
     height_top = int(screen_rel_pos(50)[1] - square_size/2)
     height_bottom = int(screen_rel_pos(50)[1] + square_size/2)
-
+    
+    # left button
     ll_x = int(screen_rel_pos()[0] - offset - square_size)
     lr_x = int(screen_rel_pos()[0] - offset)
+    
+    # right button
     rl_x = int(screen_rel_pos()[0] + offset)
     rr_x = int(screen_rel_pos()[0] + offset + square_size)
 
@@ -84,7 +95,8 @@ def game_pick():
 
     result = False
     pick = False
-
+    
+    # Event handler
     while not pick:
         for event in pygame.event.get():
 
@@ -183,6 +195,7 @@ while not gameEnd:
 
         score = 0
 
+        # Clicks game
         while clicks:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
